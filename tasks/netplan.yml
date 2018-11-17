@@ -1,0 +1,7 @@
+---
+
+- import_tasks: existing.yml
+  when:
+    - netplan_remove_existing
+
+- import_tasks: configure.yml
