@@ -1,6 +1,10 @@
 ---
 # defaults file for ansible-netplan
 netplan_config_file:      /etc/netplan/config.yaml
+
+netplan_renderer:         networkd
+# Either networkd or NetworkManager
+
 netplan_configuration:    []
   # network:
   #   version:            2
@@ -19,6 +23,7 @@ netplan_configuration:    []
   #           - 8.8.8.8
   #           # - 8.8.4.4
   #         search:
+  #           # Custom variable
   #           - "{{ netplan_pri_domain }}"
   #   #     gateway4:     192.168.250.1
   #   #     optional:     true
@@ -75,6 +80,7 @@ netplan_configuration:    []
   #   #     id:           15
   #   #     link:         enp0s25
 
-netplan_pri_domain:       vagrant.local
-
 netplan_remove_existing:  true
+
+netplan_enabled:          true
+# switch to enable/disable the role completely

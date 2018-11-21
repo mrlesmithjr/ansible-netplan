@@ -1,1 +1,4 @@
-{{ netplan_configuration|to_nice_yaml }}
+network:
+  version: 2
+  renderer: {{ netplan_renderer }}
+  {{ netplan_configuration|to_nice_yaml }}
