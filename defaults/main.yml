@@ -5,7 +5,7 @@ netplan_config_file:      /etc/netplan/config.yaml
 netplan_renderer:         networkd
 # Either networkd or NetworkManager
 
-netplan_configuration:    []
+netplan_configuration:    {}
   # network:
   #   version:            2
   #   renderer:           networkd
