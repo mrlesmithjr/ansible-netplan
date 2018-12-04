@@ -84,3 +84,6 @@ netplan_remove_existing:  true
 
 netplan_enabled:          true
 # switch to enable/disable the role completely
+netplan_packages:
+  - 'nplan'
+  - 'netplan.io'

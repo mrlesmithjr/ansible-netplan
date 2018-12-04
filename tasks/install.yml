@@ -1,0 +1,6 @@
+---
+- name: 'Install netplan'
+  apt:
+    name: '{{ netplan_packages }}'
+    state: 'present'
+
