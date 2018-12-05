@@ -5,7 +5,7 @@ netplan_config_file:      /etc/netplan/config.yaml
 netplan_renderer:         networkd
 # Either networkd or NetworkManager
 
-netplan_configuration:    []
+netplan_configuration:    {}
   # network:
   #   version:            2
   #   renderer:           networkd
@@ -84,3 +84,6 @@ netplan_remove_existing:  true
 
 netplan_enabled:          true
 # switch to enable/disable the role completely
+netplan_packages:
+  - 'nplan'
+  - 'netplan.io'
