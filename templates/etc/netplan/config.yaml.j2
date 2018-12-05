@@ -1,4 +1,4 @@
 network:
-  version: 2
-  renderer: {{ netplan_renderer }}
-  {{ netplan_configuration|to_nice_yaml }}
+    version: 2
+    renderer: {{ netplan_renderer }}
+{{ netplan_configuration|to_nice_yaml|indent(4, True) }}
