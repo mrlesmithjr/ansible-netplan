@@ -1,13 +1,14 @@
+---
 galaxy_info:
-  author:               Larry Smith Jr.
-  description:          An [Ansible](https://www.ansible.com) role to manage [Netplan](https://netplan.io)
+  author: Larry Smith Jr.
+  description: An [Ansible](https://www.ansible.com) role to manage [Netplan](https://netplan.io)
 
-  license:              license (GPLv2, CC-BY, etc)
+  license: license (GPLv2, CC-BY, etc)
 
-  min_ansible_version:  1.2
+  min_ansible_version: 1.2
 
   platforms:
-    - name:             Ubuntu
+    - name: Ubuntu
       versions:
         - artful
         - bionic
@@ -15,4 +16,4 @@ galaxy_info:
   galaxy_tags:
     - networking
 
-dependencies:           []
+dependencies: []
