@@ -1,10 +1,5 @@
 ---
 - hosts: localhost
   connection: local
-  pre_tasks:
-    - name: Installing Pre-Reqs
-      shell: apt-get update && apt-get -y install apt-utils
-      become: true
-      when: ansible_os_family == "Debian"
   roles:
     - ansible-netplan
