@@ -3,3 +3,4 @@
   apt:
     name: "{{ netplan_packages }}"
     state: "present"
+  become: true

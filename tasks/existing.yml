@@ -12,6 +12,7 @@
   file:
     path: "{{ item['path'] }}"
     state: absent
+  become: true
   with_items: "{{ _netplan_configs['files'] }}"
   when:
     - item['path'] != netplan_config_file
