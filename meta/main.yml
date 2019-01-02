@@ -3,7 +3,7 @@ galaxy_info:
   author: Larry Smith Jr.
   description: An [Ansible](https://www.ansible.com) role to manage [Netplan](https://netplan.io)
 
-  license: license (GPLv2, CC-BY, etc)
+  license: MIT
 
   min_ansible_version: 1.2
 

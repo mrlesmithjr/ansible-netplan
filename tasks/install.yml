@@ -1,6 +1,8 @@
 ---
-- name: "Install netplan"
+- name: Install netplan
   apt:
     name: "{{ netplan_packages }}"
-    state: "present"
+    state: present
   become: true
+  register: result
+  until: result is successful
