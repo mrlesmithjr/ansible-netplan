@@ -2,13 +2,16 @@
 # defaults file for ansible-netplan
 netplan_config_file: /etc/netplan/config.yaml
 
+# switch to enable/disable the role completely
+netplan_enabled: true
+
 # Either networkd or NetworkManager
 netplan_renderer: networkd
 
-netplan_configuration: {}
+netplan_configuration:
+  {}
   # network:
   #   version: 2
-  #   renderer: networkd
   #   ethernets:
   #     enp0s3:
   #       dhcp4: true
@@ -61,13 +64,13 @@ netplan_configuration: {}
   #         mode: active-backup
   #         primary: enp0s3
   #   bridges:
+  #     # br0:
+  #     #   dhcp4: yes
+  #     #   interfaces:
+  #     #     - enp0s3
   #     br0:
-  #       dhcp4: yes
-  #       interfaces:
-  #         - enp0s3
-  #     br0:
-  #       addresses: [ 10.3.99.25/24 ]
-  #       interfaces: [ vlan15 ]
+  #       addresses: [10.3.99.25/24]
+  #       interfaces: [vlan15]
   #   vlans:
   #     vlan15:
   #       accept-ra: no
@@ -76,8 +79,8 @@ netplan_configuration: {}
 
 netplan_remove_existing: true
 
-netplan_enabled: true
-# switch to enable/disable the role completely
 netplan_packages:
   - nplan
   - netplan.io
+
+netplan_pri_domain: example.org

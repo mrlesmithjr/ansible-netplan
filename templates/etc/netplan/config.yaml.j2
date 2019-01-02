@@ -1,4 +1,24 @@
+---
 network:
-  version: 2
+  version: {{ netplan_configuration['network']['version'] }}
   renderer: {{ netplan_renderer }}
-  {{ netplan_configuration|to_nice_yaml }}
+{% if netplan_configuration['network']['ethernets'] is defined %}
+  ethernets:
+{{ netplan_configuration['network']['ethernets']|to_nice_yaml|indent(4, true) }}
+{% endif %}
+{% if netplan_configuration['network']['wifis'] is defined %}
+  wifis:
+{{ netplan_configuration['network']['wifis']|to_nice_yaml|indent(4, true) }}
+{% endif %}
+{% if netplan_configuration['network']['bonds'] is defined %}
+  bonds:
+{{ netplan_configuration['network']['bonds']|to_nice_yaml|indent(4, true) }}
+{% endif %}
+{% if netplan_configuration['network']['bridges'] is defined %}
+  bridges:
+{{ netplan_configuration['network']['bridges']|to_nice_yaml|indent(4, true) }}
+{% endif %}
+{% if netplan_configuration['network']['vlans'] is defined %}
+  vlans:
+{{ netplan_configuration['network']['vlans']|to_nice_yaml|indent(4, true) }}
+{% endif %}
