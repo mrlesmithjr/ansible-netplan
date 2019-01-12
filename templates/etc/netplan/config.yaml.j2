@@ -1,6 +1,6 @@
 ---
 network:
-  version: {{ netplan_configuration['network']['version'] }}
+  version: {{ netplan_configuration['network']['version']|default('2') }}
   renderer: {{ netplan_renderer }}
 {% if netplan_configuration['network']['ethernets'] is defined %}
   ethernets:
