@@ -8,3 +8,4 @@
 - name:       Applying Netplan Configuration
   command:    netplan apply
   listen:     netplan apply config
+  when:       netplan_apply
