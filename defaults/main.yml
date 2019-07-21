@@ -84,3 +84,5 @@ netplan_packages:
   - netplan.io
 
 netplan_pri_domain: example.org
+
+netplan_apply: True
