@@ -85,4 +85,6 @@ netplan_packages:
 
 netplan_pri_domain: example.org
 
+netplan_check_install: True
+
 netplan_apply: True

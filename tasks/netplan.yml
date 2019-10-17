@@ -1,5 +1,7 @@
 ---
 - import_tasks: install.yml
+  when:
+    - netplan_check_install
 
 - import_tasks: existing.yml
   when:
