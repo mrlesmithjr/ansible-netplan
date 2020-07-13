@@ -1,12 +1,12 @@
 ---
 # defaults file for ansible-netplan
-netplan_config_file: /etc/netplan/config.yaml
+netplan_config_file: /etc/netplan/ansible-config.yaml
 
 # switch to enable/disable the role completely
 netplan_enabled: true
 
-# Either networkd or NetworkManager
-netplan_renderer: networkd
+# Configured devices get handled by systemd-networkd by default, unless explicitly marked as managed by a specific renderer (NetworkManager, networkd) 
+netplan_renderer:
 
 netplan_configuration:
   {}
@@ -85,6 +85,6 @@ netplan_packages:
 
 netplan_pri_domain: example.org
 
-netplan_check_install: True
+netplan_check_install: False
 
 netplan_apply: True
