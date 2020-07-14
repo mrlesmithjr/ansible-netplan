@@ -5,7 +5,7 @@ netplan_config_file: /etc/netplan/ansible-config.yaml
 # switch to enable/disable the role completely
 netplan_enabled: true
 
-# Configured devices get handled by systemd-networkd by default, unless explicitly marked as managed by a specific renderer (NetworkManager) 
+# Configured devices get handled by systemd-networkd by default, unless explicitly marked as managed by a specific renderer (NetworkManager)
 netplan_renderer:
 
 netplan_configuration:
