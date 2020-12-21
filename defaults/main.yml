@@ -77,7 +77,7 @@ netplan_configuration:
   #       id: 15
   #       link: enp0s25
 
-netplan_remove_existing: true
+netplan_remove_existing: false
 
 netplan_packages:
   - nplan
