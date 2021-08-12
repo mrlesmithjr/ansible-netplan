@@ -38,7 +38,7 @@ that can be set for this role.
 - hosts: ...your hosts...
   any_errors_fatal: true
   roles:
-    - role: ansible-netplan
+    - role: mrlesmithjr.netplan
       become: yes
       # This role will do nothing unless netplan_enabled is true.
       netplan_enabled: true
