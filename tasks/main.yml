@@ -1,3 +1,7 @@
 ---
 - import_tasks: netplan.yml
   when: netplan_enabled
+
+- meta: flush_handlers
+
+
