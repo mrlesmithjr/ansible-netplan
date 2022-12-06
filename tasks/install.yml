@@ -6,3 +6,12 @@
   become: true
   register: result
   until: result is successful
+
+- name: Install network-manager when used as renderer
+  apt:
+    name: "{{ netplan_networkmanager_pkt }}"
+    state: present
+  become: true
+  register: result
+  until: result is successful
+  when: netplan_renderer == 'NetworkManager'

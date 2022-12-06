@@ -3,7 +3,7 @@
   hosts: all
   become: true
   vars:
-    # netplan_renderer: 'NetworkManager'
+    netplan_renderer: 'NetworkManager'
     debug: true
     netplan_configuration:
       network:
