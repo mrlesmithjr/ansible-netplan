@@ -2,6 +2,8 @@
 galaxy_info:
   author: Larry Smith Jr.
   description: An [Ansible](https://www.ansible.com) role to manage [Netplan](https://netplan.io)
+  role_name: netplan
+  namespace: mrlesmithjr
 
   license: MIT
 
