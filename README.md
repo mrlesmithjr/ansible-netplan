@@ -63,6 +63,23 @@ that can be set for this role.
               addresses:
                 - 10.11.12.99/24
 ```
+## Using vaulted variables
+Vault encrypted variables need to be defined outside the `netplan_configuration` variable to be evaluated.
+
+```yaml
+netplan_configuration:
+  network:
+    version: 2
+    tunnels:
+      wg_test:
+        mode: wireguard
+        key: "{{ my_wireguard_private_key }}"
+      ....
+
+my_wireguard_private_key: !vault |
+          31366530666465373834386563636465636135323562303866363333333865376330303130363162
+          ....
+```
 
 ## License
 

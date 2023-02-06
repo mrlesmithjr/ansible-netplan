@@ -1,0 +1,34 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    netplan_renderer: 'NetworkManager'
+    debug: true
+    netplan_configuration:
+      network:
+        version: 2
+        tunnels:
+          wg_test:
+            mode: wireguard
+            addresses:
+              - 10.42.42.2/32
+            nameservers:
+              addresses:
+                - 10.10.10.1
+              search:
+                - dns.example.com
+            key: 'gDdP5JHM6VQQOeGZPLANiTMa+V2bbwyR8Z2o86m7gUg='
+            peers:
+              - keys:
+                  public: 'KqOQG90uvqVWGHwLW+Z5tH019Qt5QcIhpKitIovkviA='
+                allowed-ips:
+                  - 10.10.10.0/24
+                keepalive: 15
+                endpoint: 'wireguard.example.com:51820'
+            routes:
+              - to: 10.10.10.0/24
+  tasks:
+    - name: "Include ansible-netplan"
+      include_role:
+        name: "mrlesmithjr.netplan"

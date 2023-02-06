@@ -24,3 +24,7 @@ network:
   vlans:
 {{ netplan_configuration['network']['vlans']|to_nice_yaml|indent(4, true) }}
 {% endif %}
+{% if netplan_configuration['network']['tunnels'] is defined %}
+  tunnels:
+{{ netplan_configuration['network']['tunnels']|to_nice_yaml|indent(4, true) }}
+{% endif %}

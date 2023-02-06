@@ -1,2 +1,3 @@
 ---
+netplan_networkmanager_pkt: 'network-manager'
 # vars file for ansible-netplan

@@ -1,0 +1,55 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars:
+    # netplan_renderer: 'NetworkManager'
+    netplan_configuration:
+      network:
+        version: '2'
+        tunnels:
+          wg_test:
+            mode: wireguard
+            addresses:
+              - 10.42.42.2/32
+            nameservers:
+              addresses:
+                - 10.10.10.1
+              search:
+                - dns.example.com
+            key: 'gDdP5JHM6VQQOeGZPLANiTMa+V2bbwyR8Z2o86m7gUg='
+            peers:
+              - keys:
+                  public: 'KqOQG90uvqVWGHwLW+Z5tH019Qt5QcIhpKitIovkviA='
+                allowed-ips:
+                  - 10.10.10.0/24
+                keepalive: '15'
+                endpoint: 'wireguard.example.com:51820'
+            routes:
+              - to: 10.10.10.0/24
+  become: true
+  become_user: root
+  tasks:
+    - name: Read netplan config
+      ansible.builtin.slurp:
+        src: '/etc/netplan/ansible-config.yaml'
+      register: netplan_wg_config_encoded
+
+    - name: Check wireguard config
+      ansible.builtin.assert:
+        that:
+          - netplan_configuration.network.version in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.mode in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.addresses[0] in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.nameservers.addresses[0] in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.nameservers.search[0] in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.key in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.peers[0]['keys']['public'] in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.peers[0]['allowed-ips'][0] in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.peers[0].keepalive in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.peers[0].endpoint in netplan_wg_config
+          - netplan_configuration.network.tunnels.wg_test.routes[0].to in netplan_wg_config
+      vars:
+        - netplan_wg_config: "{{ netplan_wg_config_encoded.content | b64decode }}"
