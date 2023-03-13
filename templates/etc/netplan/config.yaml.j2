@@ -4,27 +4,27 @@ network:
 {% if netplan_renderer is not none %}
   renderer: {{ netplan_renderer }}
 {% endif %}
-{% if netplan_configuration['network']['ethernets'] is defined %}
+{% if netplan_configuration['network']['ethernets'] %}
   ethernets:
 {{ netplan_configuration['network']['ethernets']|to_nice_yaml|indent(4, true) }}
 {% endif %}
-{% if netplan_configuration['network']['wifis'] is defined %}
+{% if netplan_configuration['network']['wifis'] %}
   wifis:
 {{ netplan_configuration['network']['wifis']|to_nice_yaml|indent(4, true) }}
 {% endif %}
-{% if netplan_configuration['network']['bonds'] is defined %}
+{% if netplan_configuration['network']['bonds'] %}
   bonds:
 {{ netplan_configuration['network']['bonds']|to_nice_yaml|indent(4, true) }}
 {% endif %}
-{% if netplan_configuration['network']['bridges'] is defined %}
+{% if netplan_configuration['network']['bridges'] %}
   bridges:
 {{ netplan_configuration['network']['bridges']|to_nice_yaml|indent(4, true) }}
 {% endif %}
-{% if netplan_configuration['network']['vlans'] is defined %}
+{% if netplan_configuration['network']['vlans'] %}
   vlans:
 {{ netplan_configuration['network']['vlans']|to_nice_yaml|indent(4, true) }}
 {% endif %}
-{% if netplan_configuration['network']['tunnels'] is defined %}
+{% if netplan_configuration['network']['tunnels'] %}
   tunnels:
 {{ netplan_configuration['network']['tunnels']|to_nice_yaml|indent(4, true) }}
 {% endif %}
