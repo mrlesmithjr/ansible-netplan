@@ -34,7 +34,7 @@ network:
 {{ netplan_configuration['network']['vlans']|to_nice_yaml|indent(4, true) }}
 {% endif %}
 {% endif %}
-{% if netplan_configuration['network']['tunnels'] is defined%}
+{% if netplan_configuration['network']['tunnels'] is defined %}
 {% if netplan_configuration['network']['tunnels'] %}
   tunnels:
 {{ netplan_configuration['network']['tunnels']|to_nice_yaml|indent(4, true) }}
