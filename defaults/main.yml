@@ -2,6 +2,9 @@
 # defaults file for ansible-netplan
 netplan_config_file: /etc/netplan/ansible-config.yaml
 
+# File permissions for netplan config file.
+netplan_config_file_mode: '0600'
+
 # switch to enable/disable the role completely
 netplan_enabled: true
 
