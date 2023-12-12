@@ -8,6 +8,17 @@
 - debug: var=_netplan_configs
   when: debug is defined and ( debug | bool )
 
+- name: Backup Existing Configurations
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{item['path']}}"
+    dest: "{{item['path']}}.bk"
+  with_items: "{{ _netplan_configs['files'] }}"
+  when:
+    - netplan_backup_existing
+    - item['path'] != netplan_config_file
+    - netplan_configuration != []
+
 - name: Removing Existing Configurations
   file:
     path: "{{ item['path'] }}"
