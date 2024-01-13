@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "ansible-netplan"
+version = "0.1.0"
+description = ""
+authors = ["Larry Smith Jr. <mrlesmithjr@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8.1,<4.0"
+ansible = "6.6.0"
+
+[tool.poetry.group.dev.dependencies]
+ansible-lint = "6.8.7"
+black = "^22.10.0"
+pylint = "^2.15.7"
+molecule = {extras = ["docker"], version = "^4.0.3"}
+flake8 = "^6.0.0"
+cookiecutter = "^2.1.1"
+pre-commit = "^2.20.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
