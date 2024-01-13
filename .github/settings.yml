@@ -1,0 +1,13 @@
+# These settings are synced to GitHub by https://probot.github.io/apps/settings/
+
+repository:
+  # See https://developer.github.com/v3/repos/#edit for all available settings.
+
+  # The name of the repository. Changing this will rename the repository
+  name: ansible-netplan
+
+  # A short description of the repository that will show up on GitHub
+  description: Ansible role to manage Netplan
+
+  # A comma-separated list of topics to set on the repository
+  topics: ansible, ansible-role
