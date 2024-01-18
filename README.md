@@ -47,7 +47,7 @@ that can be set for this role.
       # on your system which this role will overwrite, 
       # or to a nonexistent file which netplan is aware of.
       #
-      # The default is /etc/netplan/config.yaml.
+      # The default is /etc/netplan/ansible-config.yaml.
       netplan_config_file: /etc/netplan/my-awesome-netplan.yaml
       
       # Ubuntu 18.04, for example, defaults to using networkd.
