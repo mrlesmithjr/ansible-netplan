@@ -1,0 +1,29 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars:
+    netplan_configuration:
+      network:
+        version: "2"
+        dummy-devices:
+          dm0:
+            addresses:
+              - 10.42.42.2/32
+  become: true
+  become_user: root
+  tasks:
+    - name: Read netplan config
+      ansible.builtin.slurp:
+        src: "/etc/netplan/ansible-config.yaml"
+      register: netplan_config_encoded
+
+    - name: Check wireguard config
+      ansible.builtin.assert:
+        that:
+          - netplan_configuration.network.version in netplan_config
+          - netplan_configuration.network.dummy-devices.dm0.addresses[0] in netplan_config
+      vars:
+        - netplan_config: "{{ netplan_config_encoded.content | b64decode }}"
