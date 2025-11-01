@@ -1,0 +1,24 @@
+---
+dependency:
+  name: galaxy
+  options:
+    ignore-certs: true
+    ignore-errors: true
+driver:
+  name: vagrant
+platforms:
+  - name: vagrant-ubuntu
+    box: ubuntu/focal64
+    memory: 4048
+    cpus: 4
+    instance_raw_config_args:
+      - "vm.network 'forwarded_port', guest: 8081, host: 30080"
+provisioner:
+  name: ansible
+  lint: ansible-lint --force-color
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+verifier:
+  name: ansible

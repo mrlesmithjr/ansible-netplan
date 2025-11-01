@@ -28,3 +28,7 @@ network:
   tunnels:
 {{ netplan_configuration['network']['tunnels']|to_nice_yaml|indent(4, true) }}
 {% endif %}
+{% if netplan_configuration['network']['dummy-devices'] is defined %}
+  dummy-devices:
+{{ netplan_configuration['network']['dummy-devices']|to_nice_yaml|indent(4, true) }}
+{% endif %}
