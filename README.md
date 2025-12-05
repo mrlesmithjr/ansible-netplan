@@ -27,10 +27,35 @@ You probably want to run the role with `become: true`
 
 ## Dependencies
 
+## Supported Netplan Keys
+
+This role dynamically supports **all netplan configuration keys** through YAML merging.
+You do not need to wait for role updates to use new netplan features.
+
+Any valid netplan configuration can be specified in `netplan_configuration` under
+the `network` key. The role automatically merges your configuration with sensible defaults.
+
+### Example with custom keys:
+
+```yaml
+netplan_configuration:
+  network:
+    version: 2
+    openvswitch: # Any valid netplan key works
+      ports:
+        - [patch0-1, patch1-0]
+```
+
+### Configuration Precedence
+
+The role merges your configuration with defaults. User-provided values in
+`netplan_configuration` take precedence over role-level variables like
+`netplan_renderer`.
+
 ## Example Playbook
 
 The following is a trivial example of a playbook that sets a single
-network interface.  See defaults/main.yml for a full list of values
+network interface. See defaults/main.yml for a full list of values
 that can be set for this role.
 
 ```yaml
@@ -42,14 +67,14 @@ that can be set for this role.
       become: yes
       # This role will do nothing unless netplan_enabled is true.
       netplan_enabled: true
-      
-      # This should point to an existing netplan configuration file 
-      # on your system which this role will overwrite, 
+
+      # This should point to an existing netplan configuration file
+      # on your system which this role will overwrite,
       # or to a nonexistent file which netplan is aware of.
       #
       # The default is /etc/netplan/config.yaml.
       netplan_config_file: /etc/netplan/my-awesome-netplan.yaml
-      
+
       # Ubuntu 18.04, for example, defaults to using networkd.
       netplan_renderer: networkd
       # Simple network configuration to add a single network interface.
@@ -63,7 +88,9 @@ that can be set for this role.
               addresses:
                 - 10.11.12.99/24
 ```
+
 ## Using vaulted variables
+
 Vault encrypted variables need to be defined outside the `netplan_configuration` variable to be evaluated.
 
 ```yaml

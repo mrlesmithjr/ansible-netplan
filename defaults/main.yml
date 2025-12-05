@@ -11,6 +11,15 @@ netplan_enabled: true
 # Configured devices get handled by systemd-networkd by default, unless explicitly marked as managed by a specific renderer (NetworkManager)
 netplan_renderer:
 
+netplan_default_configuration_raw: |
+  network:
+    version: 2
+  {% if netplan_renderer is not none %}
+    renderer: {{ netplan_renderer }}
+  {% endif %}
+
+netplan_default_configuration: "{{ netplan_default_configuration_raw | from_yaml }}"
+
 netplan_configuration:
   {}
   # network:
