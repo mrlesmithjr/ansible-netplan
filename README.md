@@ -1,123 +1,128 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-**Table of Contents** _generated with [DocToc](https://github.com/thlorenz/doctoc)_
-
-- [ansible-netplan](#ansible-netplan)
-  - [Requirements](#requirements)
-  - [Role Variables](#role-variables)
-  - [Dependencies](#dependencies)
-  - [Example Playbook](#example-playbook)
-  - [License](#license)
-  - [Author Information](#author-information)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 # ansible-netplan
 
-An [Ansible](https://www.ansible.com) role to manage [Netplan](https://netplan.io)
+An [Ansible](https://www.ansible.com) role to manage [Netplan](https://netplan.io) network configuration.
+
+This role supports **all Netplan configuration keys** dynamically via YAML merging — you do not need to wait for role updates to use new Netplan features.
+
+## Ansible Galaxy
+
+```bash
+ansible-galaxy install mrlesmithjr.netplan
+```
+
+## Supported Platforms
+
+| Platform | Versions |
+|----------|----------|
+| Ubuntu | 18.04, 20.04, 22.04, 24.04 |
+| Debian | 11, 12 |
 
 ## Requirements
 
-You probably want to run the role with `become: true`
+Run with `become: true`. The `netplan.io` package is installed automatically.
 
-## Role Variables
+## Quick Start
 
-[defaults/main.yml](defaults/main.yml)
+```yaml
+---
+- hosts: all
+  become: true
+  roles:
+    - role: mrlesmithjr.netplan
+      netplan_enabled: true
+      netplan_config_file: /etc/netplan/ansible-config.yaml
+      netplan_renderer: networkd
+      netplan_configuration:
+        network:
+          version: 2
+          ethernets:
+            enp3s0:
+              dhcp4: true
+```
 
-## Dependencies
+## Key Variables
 
-## Supported Netplan Keys
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `netplan_enabled` | `true` | Master switch — set to `false` to skip all tasks |
+| `netplan_config_file` | `/etc/netplan/ansible-config.yaml` | Path to the managed Netplan config file |
+| `netplan_config_file_mode` | `0600` | File permissions for the config file |
+| `netplan_renderer` | `""` | Renderer: `networkd` or `NetworkManager` (uses system default if unset) |
+| `netplan_configuration` | `{}` | Your Netplan configuration (merged with defaults) |
+| `netplan_apply` | `true` | Run `netplan apply` after configuration changes |
+| `netplan_remove_existing` | `false` | Remove existing Netplan config files before writing |
+| `netplan_backup_existing` | `false` | Back up existing config files before overwriting |
 
-This role dynamically supports **all netplan configuration keys** through YAML merging.
-You do not need to wait for role updates to use new netplan features.
+### Configuration Examples
 
-Any valid netplan configuration can be specified in `netplan_configuration` under
-the `network` key. The role automatically merges your configuration with sensible defaults.
-
-### Example with custom keys:
+**Static IP:**
 
 ```yaml
 netplan_configuration:
   network:
     version: 2
-    openvswitch: # Any valid netplan key works
-      ports:
-        - [patch0-1, patch1-0]
+    ethernets:
+      enp3s0:
+        addresses:
+          - 192.168.1.100/24
+        routes:
+          - to: default
+            via: 192.168.1.1
+        nameservers:
+          addresses: [1.1.1.1, 8.8.8.8]
 ```
 
-### Configuration Precedence
-
-The role merges your configuration with defaults. User-provided values in
-`netplan_configuration` take precedence over role-level variables like
-`netplan_renderer`.
-
-## Example Playbook
-
-The following is a trivial example of a playbook that sets a single
-network interface. See defaults/main.yml for a full list of values
-that can be set for this role.
+**Bond:**
 
 ```yaml
----
-- hosts: ...your hosts...
-  any_errors_fatal: true
-  roles:
-    - role: mrlesmithjr.netplan
-      become: yes
-      # This role will do nothing unless netplan_enabled is true.
-      netplan_enabled: true
-
-      # This should point to an existing netplan configuration file
-      # on your system which this role will overwrite,
-      # or to a nonexistent file which netplan is aware of.
-      #
-      # The default is /etc/netplan/config.yaml.
-      netplan_config_file: /etc/netplan/my-awesome-netplan.yaml
-
-      # Ubuntu 18.04, for example, defaults to using networkd.
-      netplan_renderer: networkd
-      # Simple network configuration to add a single network interface.
-      # Configuration defined bellow will be written to the file defined
-      # above in `netplan_config_file`.
-      netplan_configuration:
-        network:
-          version: 2
-          ethernets:
-            enp28s0f7:
-              addresses:
-                - 10.11.12.99/24
+netplan_configuration:
+  network:
+    version: 2
+    bonds:
+      bond0:
+        dhcp4: true
+        interfaces: [enp3s0, enp4s0]
+        parameters:
+          mode: active-backup
+          primary: enp3s0
 ```
 
-## Using vaulted variables
-
-Vault encrypted variables need to be defined outside the `netplan_configuration` variable to be evaluated.
+**WireGuard (using vaulted variables):**
 
 ```yaml
 netplan_configuration:
   network:
     version: 2
     tunnels:
-      wg_test:
+      wg0:
         mode: wireguard
         key: "{{ my_wireguard_private_key }}"
-      ....
 
 my_wireguard_private_key: !vault |
-          31366530666465373834386563636465636135323562303866363333333865376330303130363162
-          ....
+  ...
 ```
+
+> Vault-encrypted variables must be defined **outside** `netplan_configuration` to be evaluated correctly.
+
+See [defaults/main.yml](defaults/main.yml) for the full variable reference including VLANs, bridges, and WiFi.
+
+## Testing
+
+```bash
+pip install molecule molecule-docker
+molecule test
+```
+
+## Support This Project
+
+If your organization uses this role in production, consider
+[sponsoring its maintenance](https://github.com/sponsors/mrlesmithjr).
+Enterprise support tiers are available.
 
 ## License
 
 MIT
 
-## Author Information
+## Author
 
-Larry Smith Jr.
-
-- [EverythingShouldBeVirtual](http://everythingshouldbevirtual.com)
-- [@mrlesmithjr](https://www.twitter.com/mrlesmithjr)
-- <mailto:mrlesmithjr@gmail.com>
-
-<a href="https://www.buymeacoffee.com/mrlesmithjr" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+Larry Smith Jr. — [everythingshouldbevirtual.com](http://everythingshouldbevirtual.com) · [mrlesmithjr@gmail.com](mailto:mrlesmithjr@gmail.com)
