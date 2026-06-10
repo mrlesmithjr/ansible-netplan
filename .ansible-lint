@@ -1,0 +1,15 @@
+---
+profile: production
+exclude_paths:
+  - .travis.yml
+  - .github/FUNDING.yml
+  - .github/config.yml
+  - .github/dependabot.yml
+  - .github/release-drafter.yml
+  - .github/settings.yml
+  - .github/stale.yml
+  - .github/workflows/release-drafter.yml
+  - .github/workflows/release-galaxy.yml
+  - molecule/dummy-devices/
+  - molecule/wireguard/
+  - tests/

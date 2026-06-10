@@ -143,12 +143,6 @@ pip install molecule molecule-docker
 molecule test
 ```
 
-## Support This Project
-
-If your organization uses this role in production, consider
-[sponsoring its maintenance](https://github.com/sponsors/mrlesmithjr).
-Enterprise support tiers are available.
-
 ## License
 
 MIT
