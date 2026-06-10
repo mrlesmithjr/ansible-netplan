@@ -6,7 +6,7 @@
     fail_msg: "netplan_configuration must have 'network' as root key"
   when: netplan_configuration != {}
 
-- name: Configuring Netplan
+- name: Configure netplan
   ansible.builtin.copy:
     content: "{{ netplan_default_configuration | combine(netplan_configuration, recursive=True) | to_nice_yaml }}"
     dest: "{{ netplan_config_file }}"
@@ -16,7 +16,7 @@
   when: netplan_configuration.network is defined
   notify: netplan generate config
 
-- name: set ipv4_forward
+- name: Set ipv4_forward
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
     value: '1'

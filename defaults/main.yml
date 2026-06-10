@@ -101,3 +101,20 @@ netplan_pri_domain: example.org
 netplan_check_install: True
 
 netplan_apply: True
+
+# Blacklist the e1000e driver via /etc/modprobe.d and trigger update-initramfs.
+# Use this when the Intel NIC firmware hang is so frequent that the watchdog is
+# not sufficient and the driver must be disabled entirely.
+netplan_blacklist_e1000e: false
+
+# Deploy a NIC watchdog script + systemd timer (every 5 min) that checks
+# journalctl for "Detected Hardware Unit Hang", pings the default gateway,
+# and reboots if the gateway is unreachable. Mutually exclusive with
+# netplan_blacklist_e1000e: when the blacklist is enabled the watchdog is
+# removed because the driver is gone.
+netplan_enable_nic_watchdog: false
+
+# Wrap the netplan apply step in a block/rescue that restores the original
+# 50-cloud-init.yaml backup if the apply fails and SSH drops. Default true
+# because it is purely defensive and safe for remote hosts.
+netplan_enable_recovery: true

@@ -1,6 +1,6 @@
 ---
 - name: Install netplan
-  apt:
+  ansible.builtin.apt:
     name: "{{ netplan_packages }}"
     state: present
   become: true
@@ -8,7 +8,7 @@
   until: result is successful
 
 - name: Install network-manager when used as renderer
-  apt:
+  ansible.builtin.apt:
     name: "{{ netplan_networkmanager_pkt }}"
     state: present
   become: true

@@ -1,7 +1,107 @@
 ---
-- import_tasks: netplan.yml
-  when: netplan_enabled
+# e1000e blacklist and NIC watchdog (both default-off)
+- name: Include watchdog tasks
+  ansible.builtin.import_tasks: watchdog.yml
+  when: netplan_blacklist_e1000e | bool or netplan_enable_nic_watchdog | bool
 
-- meta: flush_handlers
+# Netplan configuration with optional apply-failure recovery (default-on).
+# When netplan_enable_recovery is true the configure + flush sequence runs
+# inside a block/rescue that restores the 50-cloud-init.yaml backup if
+# `netplan apply` exits non-zero while the SSH connection is still alive.
+# NOTE: block/rescue does NOT protect against SSH disconnection or network
+# loss mid-apply. An UNREACHABLE event bypasses rescue entirely and leaves
+# the host in whatever state netplan applied. True out-of-band rollback on
+# SSH drop requires `netplan try` (interactive) or a watchdog timer that
+# reverts after a timeout. When false, the tasks run without a rescue
+# wrapper (original behaviour).
 
+- name: Apply netplan configuration with connectivity recovery
+  when:
+    - netplan_enabled | bool
+    - netplan_enable_recovery | bool
+  block:
+    - name: Backup existing cloud-init netplan config before applying
+      ansible.builtin.copy:
+        src: /etc/netplan/50-cloud-init.yaml
+        dest: /etc/netplan/50-cloud-init.yaml.backup
+        remote_src: true
+        mode: "0600"
+      become: true
+      failed_when: false
 
+    - name: Include netplan tasks (recovery path)
+      ansible.builtin.import_tasks: netplan.yml
+
+    - name: Flush handlers to apply netplan immediately
+      ansible.builtin.meta: flush_handlers
+
+    - name: Wait for SSH availability after netplan apply
+      ansible.builtin.wait_for_connection:
+        timeout: 60
+
+    - name: Clean up backup file after successful apply
+      ansible.builtin.file:
+        path: /etc/netplan/50-cloud-init.yaml.backup
+        state: absent
+      become: true
+      failed_when: false
+
+  rescue:
+    - name: Network configuration apply failed
+      ansible.builtin.debug:
+        msg: "CRITICAL: Network configuration failed. Attempting rollback to previous configuration."
+
+    - name: Restore backup cloud-init netplan config
+      ansible.builtin.copy:
+        src: /etc/netplan/50-cloud-init.yaml.backup
+        dest: /etc/netplan/50-cloud-init.yaml
+        remote_src: true
+        mode: "0600"
+      become: true
+      failed_when: false
+
+    - name: Remove failed netplan configuration
+      ansible.builtin.file:
+        path: "{{ netplan_config_file }}"
+        state: absent
+      become: true
+      failed_when: false
+
+    - name: Apply rollback configuration
+      ansible.builtin.command: netplan apply
+      become: true
+      failed_when: false
+      changed_when: false
+
+    - name: Wait for connection after rollback
+      ansible.builtin.wait_for_connection:
+        timeout: 120
+      ignore_errors: true
+      register: netplan_rollback_connectivity
+
+    - name: Report rollback status
+      ansible.builtin.debug:
+        msg: >-
+          {{ 'Rollback successful - connectivity restored'
+          if netplan_rollback_connectivity is not failed
+          else 'Rollback failed - manual intervention required at console' }}
+
+    - name: Fail after rollback attempt
+      ansible.builtin.fail:
+        msg: >-
+          Network configuration failed.
+          {{ 'Rollback successful but configuration needs review.'
+          if netplan_rollback_connectivity is not failed
+          else 'CRITICAL: Rollback failed - console access required.' }}
+
+# Original flow without recovery wrapper (netplan_enable_recovery: false)
+- name: Apply netplan configuration without recovery
+  when:
+    - netplan_enabled | bool
+    - not netplan_enable_recovery | bool
+  block:
+    - name: Include netplan tasks (no-recovery path)
+      ansible.builtin.import_tasks: netplan.yml
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers

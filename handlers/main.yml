@@ -1,12 +1,20 @@
 ---
 - name: Generating Netplan Configuration
-  command: netplan generate
+  ansible.builtin.command: netplan generate
   listen: netplan generate config
   notify: netplan apply config
   become: true
+  changed_when: true
 
 - name: Applying Netplan Configuration
-  command: netplan apply
+  ansible.builtin.command: netplan apply
   listen: netplan apply config
   become: true
   when: netplan_apply
+  changed_when: true
+
+- name: Update initramfs
+  ansible.builtin.command: update-initramfs -u
+  listen: update initramfs
+  become: true
+  changed_when: true

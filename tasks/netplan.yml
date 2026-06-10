@@ -1,10 +1,13 @@
 ---
-- import_tasks: install.yml
+- name: Include install tasks
+  ansible.builtin.import_tasks: install.yml
   when:
     - netplan_check_install
 
-- import_tasks: existing.yml
+- name: Include existing config tasks
+  ansible.builtin.import_tasks: existing.yml
   when:
     - netplan_remove_existing
 
-- import_tasks: configure.yml
+- name: Include configure tasks
+  ansible.builtin.import_tasks: configure.yml

@@ -1,0 +1,138 @@
+---
+# e1000e driver blacklist
+# When enabled, writes the blacklist config and triggers update-initramfs so
+# the driver is excluded from the initrd on next boot. The watchdog is not
+# deployed when the blacklist is active because the driver will be absent.
+
+- name: Blacklist e1000e driver
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/blacklist-e1000e.conf
+    content: "blacklist e1000e\n"
+    owner: root
+    group: root
+    mode: "0644"
+  when: netplan_blacklist_e1000e | bool
+  notify: update initramfs
+  become: true
+
+# NIC watchdog: only deployed when the blacklist is NOT active.
+# Checks journalctl for hardware unit hang events every 5 minutes via a
+# systemd timer and reboots if the default gateway is unreachable.
+
+- name: Deploy NIC watchdog script
+  ansible.builtin.copy:
+    dest: /usr/local/bin/watch_nic_hang.sh
+    content: |
+      #!/bin/bash
+      if journalctl --since "10 minutes ago" | grep -Fq "Detected Hardware Unit Hang"; then
+        logger -t watchdog "NIC hang detected -- checking gateway connectivity"
+        GATEWAY=$(ip route | awk '/default/ {print $3}')
+        if ping -c 3 -W 2 "$GATEWAY" > /dev/null; then
+          logger -t watchdog "NIC hang reported, but gateway ping succeeded -- no reboot"
+        else
+          logger -t watchdog "NIC appears unresponsive -- initiating reboot"
+          /sbin/reboot
+        fi
+      fi
+    owner: root
+    group: root
+    mode: "0755"
+  when:
+    - netplan_enable_nic_watchdog | bool
+    - not netplan_blacklist_e1000e | bool
+  become: true
+
+- name: Create systemd service for NIC watchdog
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/nic-hang-watch.service
+    content: |
+      [Unit]
+      Description=Check journal for NIC hang and reboot if detected
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/bin/watch_nic_hang.sh
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - netplan_enable_nic_watchdog | bool
+    - not netplan_blacklist_e1000e | bool
+  become: true
+
+- name: Create systemd timer for NIC watchdog
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/nic-hang-watch.timer
+    content: |
+      [Unit]
+      Description=Watch for e1000e NIC hang events
+
+      [Timer]
+      OnBootSec=5min
+      OnUnitActiveSec=5min
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - netplan_enable_nic_watchdog | bool
+    - not netplan_blacklist_e1000e | bool
+  become: true
+
+- name: Enable and start NIC watchdog timer
+  ansible.builtin.systemd:
+    name: nic-hang-watch.timer
+    enabled: true
+    state: started
+    daemon_reload: true
+  when:
+    - netplan_enable_nic_watchdog | bool
+    - not netplan_blacklist_e1000e | bool
+  become: true
+
+# Cleanup: remove watchdog components when the watchdog is disabled.
+# The blacklist and watchdog are independent features; cleanup runs whenever
+# the watchdog is turned off, regardless of the blacklist state. This ensures
+# stale files are removed if a user disables the watchdog without enabling the
+# blacklist.
+
+- name: Remove NIC watchdog script when watchdog is disabled
+  ansible.builtin.file:
+    path: /usr/local/bin/watch_nic_hang.sh
+    state: absent
+  when: not netplan_enable_nic_watchdog | bool
+  become: true
+
+- name: Remove NIC watchdog service when watchdog is disabled
+  ansible.builtin.file:
+    path: /etc/systemd/system/nic-hang-watch.service
+    state: absent
+  when: not netplan_enable_nic_watchdog | bool
+  become: true
+
+- name: Remove NIC watchdog timer when watchdog is disabled
+  ansible.builtin.file:
+    path: /etc/systemd/system/nic-hang-watch.timer
+    state: absent
+  when: not netplan_enable_nic_watchdog | bool
+  become: true
+
+- name: Check if NIC watchdog timer file exists
+  ansible.builtin.stat:
+    path: /etc/systemd/system/nic-hang-watch.timer
+  register: netplan_nic_watchdog_timer_file
+  changed_when: false
+
+- name: Disable and stop NIC watchdog timer when watchdog is disabled
+  ansible.builtin.systemd:
+    name: nic-hang-watch.timer
+    enabled: false
+    state: stopped
+    daemon_reload: true
+  when:
+    - not netplan_enable_nic_watchdog | bool
+    - netplan_nic_watchdog_timer_file.stat.exists
+  become: true
