@@ -64,6 +64,9 @@ jobs:
       - name: Check Ansible version
         run: ansible --version
 
+      - name: Install required collections
+        run: ansible-galaxy collection install ansible.posix
+
       - name: Create ansible.cfg with correct roles_path
         run: printf '[defaults]\nroles_path=../' >ansible.cfg
 
