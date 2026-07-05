@@ -27,4 +27,3 @@ jobs:
           --api-key ${{ secrets.GALAXY_API_KEY }}
           ${{ github.repository_owner }}
           ${{ github.event.repository.name }}
-
